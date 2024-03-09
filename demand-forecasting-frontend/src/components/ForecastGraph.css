@@ -1,0 +1,17 @@
+.forecast-graph-container {
+    margin-top: 20px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.graph-title {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.graph-wrapper {
+    height: 400px;
+    width: 600px;
+    margin-top: 20px;
+}
