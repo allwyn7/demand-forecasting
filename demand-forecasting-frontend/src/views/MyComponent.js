@@ -9,18 +9,24 @@ function MyComponent() {
     const handleTextInputSubmit = async (text) => {
         try {
             setLoading(true);
-            const response = await fetch('http://localhost:5000/interpret', {
+    
+            // Ensure text is a string
+            if (typeof text !== 'string') {
+                text = String(text);
+            }
+    
+            const response = await fetch('http://127.0.0.1:5000/interpret', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ prompt: text })
             });
-
+    
             if (!response.ok) {
                 throw new Error('Failed to interpret user input');
             }
-
+    
             const data = await response.json();
             setInterpretation(data.interpretation);
         } catch (error) {
@@ -28,7 +34,7 @@ function MyComponent() {
         } finally {
             setLoading(false);
         }
-    };
+    };    
 
     const handleButtonClick = () => {
         console.log('Button clicked');
