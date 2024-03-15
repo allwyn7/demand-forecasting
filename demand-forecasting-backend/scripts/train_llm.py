@@ -1,59 +1,47 @@
 import pandas as pd
-from transformers import GPT2LMHeadModel, GPT2Tokenizer, Trainer, TrainingArguments
-from torch.utils.data import Dataset
+from transformers import GPT2Tokenizer, GPT2LMHeadModel, TextDataset, DataCollatorForLanguageModeling, Trainer, TrainingArguments
 
-# Step 1: Load the Dataset
+# Load Dataset
 df = pd.read_csv("C:/Users/allwy/Documents/GitHub/demand-forecasting/demand-forecasting-backend/data/Historical Product Demand.csv")
+df = df.sample(frac=0.1).reset_index(drop=True) # shuffle dataframe
+# Preprocess the Data
+df["text_data"] = "The demand for " + df["Product_Code"] + " from " + df["Warehouse"] + " belonging to " + df["Product_Category"] + " on " + df["Date"] + " was " + df["Order_Demand"].apply(str)
+# Convert dataframe to text file
+df["text_data"].to_frame().to_csv('text_data.txt', index=False, header=False)
 
-# Step 2: Preprocess the Data
-# Concatenate relevant columns into a single text format
-df["text_data"] = df["Product_Code"] + " " + df["Warehouse"] + " " + df["Product_Category"] + " " + df["Date"]
+# Load tokenizer and model
+tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
+model = GPT2LMHeadModel.from_pretrained('gpt2')
 
-# Drop rows with missing values in the "text_data" column
-df = df.dropna(subset=["text_data"])
+# Load dataset
+train_dataset = TextDataset(
+          tokenizer=tokenizer,
+          file_path="text_data.txt",
+          block_size=128)
 
-# Step 3: Tokenize the Data
-tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
-df["tokenized_text"] = df["text_data"].apply(lambda x: tokenizer.encode(x, add_special_tokens=True))
+# Define data collator
+data_collator = DataCollatorForLanguageModeling(
+    tokenizer=tokenizer, mlm=False)
 
-# Step 4: Define Dataset Class
-class DemandForecastDataset(Dataset):
-    def __init__(self, data):
-        self.data = data
-    
-    def __len__(self):
-        return len(self.data)
-    
-    def __getitem__(self, idx):
-        return self.data[idx]
-
-# Step 5: Fine-Tune the Model
-model = GPT2LMHeadModel.from_pretrained("gpt2")
-dataset = DemandForecastDataset(df["tokenized_text"].tolist())
-
+# Initialize our Trainer
 training_args = TrainingArguments(
     output_dir="./results",
     overwrite_output_dir=True,
-    num_train_epochs=3,
+    num_train_epochs=1,
     per_device_train_batch_size=8,
-    save_steps=1000,
+    save_steps=10_000,
     save_total_limit=2,
-    logging_dir="./logs",
-    logging_steps=100,
+    prediction_loss_only=True,
 )
 
 trainer = Trainer(
     model=model,
     args=training_args,
-    train_dataset=dataset,
-    tokenizer=tokenizer,
+    data_collator=data_collator,
+    train_dataset=train_dataset,
 )
 
 trainer.train()
 
-# Step 6: Evaluate the Model (Optional)
-trainer.evaluate()
-
-# Step 7: Save the Fine-Tuned Model
-model.save_pretrained("fine_tuned_demand_forecast_model")
-tokenizer.save_pretrained("fine_tuned_demand_forecast_tokenizer")
+# Save the Fine-Tuned Model
+model.save_pretrained("fine_tuned_gpt2")

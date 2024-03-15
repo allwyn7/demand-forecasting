@@ -5,6 +5,7 @@
 /demand-forecasting-backend/node_modules
 /.pnp
 .pnp.js
+/demand-forecasting-backend/env
 
 # testing
 /coverage
