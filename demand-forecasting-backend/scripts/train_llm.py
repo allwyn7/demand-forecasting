@@ -1,5 +1,6 @@
 import pandas as pd
 from transformers import GPT2Tokenizer, GPT2LMHeadModel, TextDataset, DataCollatorForLanguageModeling, Trainer, TrainingArguments
+import torch
 
 # Load Dataset
 df = pd.read_csv("C:/Users\I527229/Documents/Work/Dissertation/demand-forecasting/demand-forecasting-backend/data/Historical Product Demand.csv")
@@ -36,7 +37,7 @@ training_args = TrainingArguments(
     overwrite_output_dir=True,
     num_train_epochs=1,
     per_device_train_batch_size=4,  # Reduce the batch size
-    save_steps=10_000,
+    save_steps=1000,  # Save after every 1000 steps
     save_total_limit=2,
     prediction_loss_only=True,
     fp16=True, # Enable fp16 for less memory usage
@@ -54,4 +55,5 @@ trainer = Trainer(
 trainer.train()
 
 # Save the Fine-Tuned Model
-model.save_pretrained("fine_tuned_gpt2")
+trainer.save_model("fine_tuned_gpt2")  # Save model directly from the trainer
+torch.save(model.state_dict(), 'fine_tuned_gpt2.pth')  # Save model state dict
