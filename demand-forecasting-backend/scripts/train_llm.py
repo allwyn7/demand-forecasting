@@ -2,7 +2,7 @@ import pandas as pd
 from transformers import GPT2Tokenizer, GPT2LMHeadModel, TextDataset, DataCollatorForLanguageModeling, Trainer, TrainingArguments
 
 # Load Dataset
-df = pd.read_csv("C:/Users/allwy/Documents/GitHub/demand-forecasting/demand-forecasting-backend/data/Historical Product Demand.csv")
+df = pd.read_csv("C:/Users\I527229/Documents/Work/Dissertation/demand-forecasting/demand-forecasting-backend/data/Historical Product Demand.csv")
 df = df.sample(frac=0.1).reset_index(drop=True) # shuffle dataframe
 
 # Preprocess the Data
@@ -13,7 +13,12 @@ df["text_data"].to_frame().to_csv('text_data.txt', index=False, header=False)
 
 # Load tokenizer and model
 tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
-model = GPT2LMHeadModel.from_pretrained('gpt2', gradient_checkpointing = True) # enable gradient checkpointing to save memory
+
+# Load pretrained model
+model = GPT2LMHeadModel.from_pretrained('gpt2')
+
+# Enable gradient checkpointing to save memory
+model.config.gradient_checkpointing = True
 
 # Load dataset
 train_dataset = TextDataset(
@@ -35,7 +40,7 @@ training_args = TrainingArguments(
     save_total_limit=2,
     prediction_loss_only=True,
     fp16=True, # Enable fp16 for less memory usage
-    gradient_accumulation_steps=2 # Gradient accumulation
+    gradient_accumulation_steps=2, # Gradient accumulation
 )
 
 trainer = Trainer(
@@ -45,6 +50,7 @@ trainer = Trainer(
     train_dataset=train_dataset,
 )
 
+# Training
 trainer.train()
 
 # Save the Fine-Tuned Model
