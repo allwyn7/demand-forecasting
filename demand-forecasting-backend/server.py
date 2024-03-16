@@ -6,8 +6,8 @@ app = Flask(__name__)
 CORS(app)
 
 # Load pre-trained model and tokenizer
-tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
-model = GPT2LMHeadModel.from_pretrained("gpt2")
+tokenizer = GPT2Tokenizer.from_pretrained("C:/Users/allwy/Documents/GitHub/demand-forecasting/demand-forecasting-backend/scripts/fine_tuned_gpt2", local_files_only=True)
+model = GPT2LMHeadModel.from_pretrained("C:/Users/allwy/Documents/GitHub/demand-forecasting/demand-forecasting-backend/scripts/fine_tuned_gpt2", local_files_only=True)
 
 @app.route('/interpret', methods=['POST'])
 def interpret():

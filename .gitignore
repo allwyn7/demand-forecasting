@@ -6,6 +6,11 @@
 /.pnp
 .pnp.js
 /demand-forecasting-backend/env
+/demand-forecasting-backend/scripts/fine_tuned_gpt2
+/demand-forecasting-backend/scripts/results
+/demand-forecasting-backend/scripts/cached_lm_GPT2Tokenizer_128_text_data.txt
+/demand-forecasting-backend/scripts/fine_tuned_gpt2.pth
+/demand-forecasting-backend/scripts/text_data.txt
 
 # testing
 /coverage

@@ -3,7 +3,7 @@ from transformers import GPT2Tokenizer, GPT2LMHeadModel, TextDataset, DataCollat
 import torch
 
 # Load Dataset
-df = pd.read_csv("C:/Users\I527229/Documents/Work/Dissertation/demand-forecasting/demand-forecasting-backend/data/Historical Product Demand.csv")
+df = pd.read_csv("C:/Users/allwy/Documents/GitHub/demand-forecasting/demand-forecasting-backend/data/Historical Product Demand.csv")
 df = df.sample(frac=0.1).reset_index(drop=True) # shuffle dataframe
 
 # Preprocess the Data
